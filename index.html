@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>你最像红楼梦里的哪个人物</title>
+<style>
+:root{
+  --bg:#14101b;--bg2:#0b0910;--gold:#e8c87a;--gold2:#c9963f;--gold-l:#f6e6bd;
+  --red:#c05a6a;--txt:#f2ece0;--sub:#a79f92;--line:rgba(232,200,122,.18);--card:rgba(255,255,255,.035);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:"PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
+  background:radial-gradient(1200px 800px at 50% -10%,#2a1f33 0%,var(--bg) 45%,var(--bg2) 100%);
+  color:var(--txt);min-height:100vh;min-height:100dvh;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  -webkit-user-select:none;user-select:none;
+}
+#dust{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.wrap{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:40px 20px 46px;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
+.view{display:none;animation:fade .45s ease}
+.view.on{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* 首页 */
+.home{text-align:center;padding-top:6px}
+.seal-hero{width:104px;height:104px;margin:0 auto;border:3px solid var(--red);border-radius:10px;
+  display:flex;align-items:center;justify-content:center;position:relative;transform:rotate(-4deg);
+  box-shadow:0 0 0 4px rgba(192,90,106,.12),0 12px 30px -12px rgba(192,90,106,.6)}
+.seal-hero::after{content:"";position:absolute;inset:6px;border:1px solid rgba(192,90,106,.5);border-radius:5px}
+.seal-hero span{font-family:"KaiTi","STKaiti",serif;font-size:60px;color:#e36b7e;line-height:1;transform:rotate(4deg)}
+.orn{font-size:12px;letter-spacing:6px;color:var(--gold2);margin-top:26px;text-indent:6px}
+h1{font-size:clamp(28px,7.6vw,40px);line-height:1.4;margin:14px 0 0;font-weight:800;letter-spacing:1px;
+  background:linear-gradient(180deg,#fff6df,#e8c87a);-webkit-background-clip:text;background-clip:text;color:transparent}
+.subtitle{font-size:14px;color:var(--sub);line-height:1.9;margin:16px 0 0}
+.hint{font-size:12px;color:#6f6a5f;margin:14px 0 0;letter-spacing:1px}
+.btn{display:inline-flex;align-items:center;justify-content:center;width:100%;padding:16px;border:none;border-radius:14px;
+  cursor:pointer;font-size:16px;font-weight:700;color:#2a1c0c;letter-spacing:2px;margin-top:26px;
+  background:linear-gradient(135deg,#f3dfa8,#d3a24c);box-shadow:0 14px 28px -12px rgba(211,162,76,.7);transition:.2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 18px 32px -12px rgba(211,162,76,.8)}
+.btn:active{transform:translateY(0)}
+.btn.ghost{background:rgba(255,255,255,.05);color:var(--gold-l);box-shadow:none;border:1px solid var(--line);margin-top:12px}
+.people-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:30px}
+.pchip{font-size:10px;color:var(--sub);border:1px solid var(--line);border-radius:10px;padding:9px 1px;background:var(--card);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pchip i{display:block;font-style:normal;font-family:"KaiTi","STKaiti",serif;font-size:16px;color:var(--gold-l);margin-bottom:3px}
+
+/* 答题 */
+.quiz-top{position:sticky;top:0;z-index:3;padding:6px 0 14px;background:linear-gradient(180deg,var(--bg) 70%,transparent)}
+.qmeta{display:flex;justify-content:space-between;font-size:12px;color:var(--sub);letter-spacing:1px;margin-bottom:10px}
+.qmeta b{color:var(--gold);font-size:15px}
+.bar{height:6px;border-radius:6px;background:rgba(255,255,255,.08);overflow:hidden}
+.bar i{display:block;height:100%;width:0;border-radius:6px;background:linear-gradient(90deg,var(--gold2),var(--gold-l));transition:width .35s ease}
+.qtext{font-size:clamp(18px,5vw,22px);font-weight:700;line-height:1.6;margin:34px 2px 26px;letter-spacing:.5px}
+.opts{display:flex;flex-direction:column;gap:12px}
+.opt{display:flex;align-items:center;gap:14px;padding:17px 16px;border:1.5px solid rgba(232,200,122,.14);border-radius:14px;
+  cursor:pointer;transition:.18s;background:var(--card);font-size:14px;line-height:1.5;color:#e6dfd2}
+.opt .k{flex:0 0 30px;height:30px;border-radius:50%;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;
+  font-size:13px;color:var(--gold);font-weight:700}
+@media(hover:hover){.opt:hover{border-color:var(--gold2);background:rgba(232,200,122,.07);transform:translateY(-1px)}}
+.opt.sel{border-color:var(--gold);background:rgba(232,200,122,.13);box-shadow:0 0 0 1px var(--gold2) inset}
+.opt.sel .k{background:var(--gold);color:#2a1c0c;border-color:var(--gold)}
+
+/* 结果 */
+.res-head{text-align:center;padding-top:8px}
+.seal-big{--rc:var(--red);width:112px;height:112px;margin:0 auto;border:3px solid var(--rc);border-radius:12px;
+  display:flex;align-items:center;justify-content:center;position:relative;transform:rotate(-4deg);
+  box-shadow:0 0 0 4px rgba(255,255,255,.04),0 14px 34px -14px var(--rc);animation:stamp .5s cubic-bezier(.2,1.5,.4,1)}
+.seal-big::after{content:"";position:absolute;inset:6px;border:1px solid var(--rc);border-radius:6px;opacity:.55}
+.seal-big .nm{font-family:"KaiTi","STKaiti",serif;font-size:30px;color:var(--gold-l);letter-spacing:2px}
+@keyframes stamp{from{transform:scale(1.5) rotate(-16deg);opacity:0}to{transform:scale(1) rotate(-4deg);opacity:1}}
+.r-label{font-size:12px;letter-spacing:5px;color:var(--gold2);margin:22px 0 6px}
+.r-name{font-size:clamp(28px,8vw,40px);font-weight:800;margin:0;letter-spacing:2px;color:var(--gold-l)}
+.r-id{font-size:13px;color:var(--sub);margin:8px 0 0;letter-spacing:1px}
+.score-card{display:flex;align-items:center;gap:20px;margin:26px 0 18px;padding:20px;border-radius:18px;
+  border:1px solid var(--line);background:linear-gradient(135deg,rgba(232,200,122,.09),rgba(255,255,255,.02))}
+.ring{position:relative;flex:0 0 128px;width:128px;height:128px}
+.ring svg{transform:rotate(-90deg)}
+.ring circle{fill:none;stroke-width:9}
+.ring .trk{stroke:rgba(255,255,255,.08)}
+.ring .val{stroke:url(#gg);stroke-linecap:round;stroke-dasharray:339.3;stroke-dashoffset:339.3;transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)}
+.ring .num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column}
+.ring .num b{font-size:35px;color:var(--gold-l);line-height:1}
+.ring .num small{font-size:11px;color:var(--sub);margin-top:3px;letter-spacing:1px}
+.score-txt h3{margin:0 0 10px;font-size:16px;color:var(--gold)}
+.score-txt p{margin:0;font-size:13px;color:var(--sub);line-height:1.75}
+.sec{margin:22px 0}
+.sec-t{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:700;color:var(--gold);margin-bottom:12px;letter-spacing:1px}
+.sec-t::before{content:"";width:4px;height:15px;border-radius:3px;background:var(--gold2)}
+.desc{font-size:14px;line-height:2;color:#ded7c9;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 17px}
+.tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.tag{font-size:12px;color:var(--gold-l);border:1px solid var(--line);background:rgba(232,200,122,.07);padding:6px 12px;border-radius:20px}
+.moment{font-size:13px;line-height:1.9;color:var(--sub);border-left:2px solid var(--gold2);padding-left:14px}
+.quote{font-size:13px;line-height:1.9;color:#cdbfa6;font-style:italic;text-align:center;padding:6px 0}
+.top3{display:flex;flex-direction:column;gap:11px}
+.t3row{display:flex;align-items:center;gap:11px;font-size:13px}
+.t3row .n{width:66px;color:var(--txt);flex:0 0 66px}
+.t3row .track{flex:1;height:8px;border-radius:8px;background:rgba(255,255,255,.07);overflow:hidden}
+.t3row .track i{display:block;height:100%;width:0;border-radius:8px;background:linear-gradient(90deg,var(--gold2),var(--gold-l));transition:width 1s .2s}
+.t3row .p{width:38px;text-align:right;color:var(--gold);font-variant-numeric:tabular-nums}
+.btns{display:flex;flex-direction:column;gap:11px;margin-top:26px}
+.foot-note{text-align:center;font-size:11px;color:#6f6a5f;margin-top:24px;line-height:1.8;letter-spacing:.5px}
+.toast{position:fixed;left:50%;bottom:40px;transform:translate(-50%,20px);background:rgba(20,16,27,.96);
+  border:1px solid var(--line);color:var(--gold-l);padding:12px 22px;border-radius:30px;font-size:13px;
+  opacity:0;pointer-events:none;transition:.3s;z-index:99;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+@media(max-width:480px){
+  .wrap{padding:22px 15px 34px}
+  .seal-hero{width:88px;height:88px}.seal-hero span{font-size:52px}
+  .people-grid{gap:5px}.pchip{font-size:9px;padding:8px 1px}.pchip i{font-size:15px}
+  .score-card{gap:13px;padding:15px}.ring{flex-basis:108px;width:108px;height:108px}.ring .num b{font-size:29px}
+  .seal-big{width:96px;height:96px}.seal-big .nm{font-size:26px}
+}
+@media(max-width:360px){.people-grid{grid-template-columns:repeat(4,1fr)}.opt{padding:15px 12px;font-size:13.5px}}
+</style>
+</head>
+<body>
+<canvas id="dust"></canvas>
+<div class="wrap">
+
+  <section class="view home on" id="v-home">
+    <div class="seal-hero"><span>红</span></div>
+    <div class="orn">大 观 园 · 梦 里 红 楼</div>
+    <h1 style="margin-top:18px">你最像<br>红楼梦里的哪个人物</h1>
+    <p class="subtitle">18 道趣味情境题<br>走进大观园，解锁属于你的红楼人格</p>
+    <p class="hint">凭第一直觉作答 · 约 5 分钟</p>
+    <button class="btn" onclick="start()">走进大观园 &nbsp;→</button>
+    <div class="people-grid" id="pgrid"></div>
+    <div class="foot-note">趣味测试 · 仅供娱乐<br>答案无好坏，只为遇见另一个自己</div>
+  </section>
+
+  <section class="view" id="v-quiz">
+    <div class="quiz-top">
+      <div class="qmeta"><span>游园进度</span><span><b id="qnow">1</b> / <span id="qall">18</span></span></div>
+      <div class="bar"><i id="barfill"></i></div>
+    </div>
+    <div class="qtext" id="qtext"></div>
+    <div class="opts" id="opts"></div>
+    <div class="foot-note">凭直觉，选最像你的那一个</div>
+  </section>
+
+  <section class="view" id="v-result">
+    <div class="res-head">
+      <div class="orn">镜 花 水 月 · 偷 描 性 格</div>
+      <div class="seal-big" id="rseal"><div class="nm" id="rsealname"></div></div>
+      <div class="r-label">你最像</div>
+      <h2 class="r-name" id="rname"></h2>
+      <p class="r-id" id="rid"></p>
+    </div>
+    <div class="score-card">
+      <div class="ring">
+        <svg width="128" height="128" viewBox="0 0 128 128">
+          <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#f6e6bd"/><stop offset="1" stop-color="#c9963f"/>
+          </linearGradient></defs>
+          <circle class="trk" cx="64" cy="64" r="54"/>
+          <circle class="val" id="ringval" cx="64" cy="64" r="54"/>
+        </svg>
+        <div class="num"><b id="rpct">0</b><small>契合度 %</small></div>
+      </div>
+      <div class="score-txt">
+        <h3 id="rverdict"></h3>
+        <p id="rwhy"></p>
+      </div>
+    </div>
+    <div class="sec"><div class="sec-t">人格画像</div><div class="desc" id="rdesc"></div><div class="tags" id="rtags"></div></div>
+    <div class="sec"><div class="sec-t">经典一刻</div><div class="moment" id="rmoment"></div></div>
+    <div class="sec"><div class="sec-t">红楼寄语</div><div class="quote" id="rquote"></div></div>
+    <div class="sec"><div class="sec-t">与你最接近的三位</div><div class="top3" id="rtop3"></div></div>
+    <div class="btns">
+      <button class="btn" onclick="makeCard()">生成人物卡片</button>
+      <button class="btn ghost" onclick="restart()">再游一次</button>
+    </div>
+    <div class="foot-note">卡片将保存到当前设备的「下载」文件夹<br>趣味测试 · 仅供娱乐</div>
+  </section>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============ 红楼人物库 ============ */
+const P={
+  daiyu:{name:'林黛玉',short:'黛玉',id:'荣国府 · 潇湘妃子 ｜ 绛珠仙草',cls:'清',col:'#86c5b0',
+    tags:['敏感','诗意','孤高','真情'],
+    desc:'你有一颗比别人更细腻的心，总能捕捉到旁人忽略的细微情绪。你不肯随波逐流，也懒得伪装圆滑，宁可孤独也要守住真实的自己。你的才情是藏不住的，一首诗、一句话，总能戳中最柔软的地方。别人说你"想太多"，可正是这份敏感，让你活得比谁都深。',
+    moment:'荷锄葬花，一首《葬花吟》"质本洁来还洁去"道尽身世之悲；与宝玉共读《西厢》，引为知己。',
+    quote:'"质本洁来还洁去，强于污淖陷渠沟。"',
+    verdict:'灵秀属·潇湘妃子',why:'你宁可清醒地痛，也不愿糊涂地活，真情是你唯一的信仰。'},
+  xiangyun:{name:'史湘云',short:'湘云',id:'史侯府 · 枕霞旧友 ｜ 醉眠芍药',cls:'清',col:'#86c5b0',
+    tags:['爽朗','豪迈','天真','才情'],
+    desc:'你是人群里最能带来笑声的那一个。你心直口快，不带心机，喝酒吃肉、吟诗作对都格外尽兴。你不爱算计，也不记仇，烦恼来得快去得也快。你身上有种男孩般的爽利，却又不失女儿的灵动——你是大观园里最不像"规矩人"的姑娘，却最让人喜欢。',
+    moment:'醉眠芍药裀，花瓣落了一身，蜂蝶围绕，犹在梦中吟诗；凹晶馆与黛玉联诗"寒塘渡鹤影"。',
+    quote:'"醉眠芍药裀，梦里犹吟诗。"',
+    verdict:'爽朗属·枕霞旧友',why:'你把日子过成了诗酒江湖，用豪爽点燃了整个园子。'},
+  xiangling:{name:'香菱',short:'香菱',id:'薛家 · 秋菱 ｜ 苦命诗痴',cls:'清',col:'#86c5b0',
+    tags:['痴迷','坚韧','纯真','向上'],
+    desc:'你命里吃过不少苦，却从没磨掉心里的光。你认定了一件事就钻进去，不达目的不罢休——学诗学到梦中都在吟句。你待人真诚，不设防，也因此在复杂的环境里吃过亏。但你有一种惊人的韧性：跌到谷底，还能重新抬起头，认真地把自己活成一首诗。',
+    moment:'拜黛玉为师学诗，废寝忘食、梦中得句，终吟出"精华欲掩料应难，影自娟娟魄自寒"的佳句。',
+    quote:'"精华欲掩料应难，影自娟娟魄自寒。"',
+    verdict:'诗痴属·秋菱',why:'你把苦难熬成了墨水，一笔一画写着自己的命运。'},
+  miaoyu:{name:'妙玉',short:'妙玉',id:'栊翠庵 · 槛外人 ｜ 世外仙姝',cls:'清',col:'#86c5b0',
+    tags:['清高','孤傲','洁癖','通透'],
+    desc:'你和人群总保持着一段恰到好处的距离。你极在意自己的边界，不喜欢被冒犯，也不轻易示好。你有极高的审美与品味，对俗世天然疏离。别人觉得你冷，其实你只是把热烈藏在了很深的地方——你宁愿守着一方清净，也不愿随俗浮沉。',
+    moment:'栊翠庵品茶，用"五年前收的梅花上的雪"烹茶待客，自号"槛外人"，超然物外。',
+    quote:'"欲洁何曾洁，云空未必空。"',
+    verdict:'孤高属·槛外人',why:'你守住了心里的那片雪，不让它被俗世弄脏。'},
+
+  baochai:{name:'薛宝钗',short:'宝钗',id:'薛家 · 蘅芜君 ｜ 金玉良缘',cls:'端',col:'#e3c07a',
+    tags:['圆融','稳重','博学','周全'],
+    desc:'你是那种让所有人都觉得"舒服"的人。你懂事、得体、情绪稳定，话不说满，事不做绝。你有极广的学识和极强的自控力，能把分寸拿捏得恰到好处。你并非没有主见，只是更愿意把锋芒包进温和里。你相信"世事洞明皆学问"，把人情世故活成了一门艺术。',
+    moment:'滴翠亭扑蝶随机应变，金钏投井后得体安抚王夫人，螃蟹宴上一首咏蟹诗讽喻世人。',
+    quote:'"好风凭借力，送我上青云。"',
+    verdict:'圆融属·蘅芜君',why:'你把周全活成了修养，让人如沐春风、挑不出错处。'},
+  tanchun:{name:'贾探春',short:'探春',id:'荣国府 · 蕉下客 ｜ 敏探春',cls:'端',col:'#e3c07a',
+    tags:['精明','志高','果断','革新'],
+    desc:'你是个"心里有火、眼里有光"的人。你清醒地知道自己的处境，却从不服气命运的安排。你做事利落、讲原则，敢在关键时刻拍板，也敢得罪人去兴利除弊。你有现代管理者的头脑，讨厌混乱和低效。你最不能忍的，是别人因为出身而看轻你。',
+    moment:'受托协理荣国府，兴利除宿弊、承包大观园，雷厉风行；抄检大观园时怒斥"自杀自灭"的败家之举。',
+    quote:'"才自精明志自高，生于末世运偏消。"',
+    verdict:'志高属·蕉下客',why:'你明知局面艰难，仍要亲手把秩序重新立起来。'},
+  xiren:{name:'花袭人',short:'袭人',id:'怡红院 · 花气袭人 ｜ 解语花',cls:'端',col:'#e3c07a',
+    tags:['温柔','坚韧','周全','责任'],
+    desc:'你是那种"润物细无声"的人。你不争不抢，却总在关键时刻被依赖。你有极强的责任感，答应别人的事就会默默扛到底；你善于照顾别人的情绪，把场面收拾得妥帖周全。你的温柔不是软弱，而是一种选择——你相信把身边人照顾好，比争一口气更有价值。',
+    moment:'温柔规劝宝玉读书上进，被宝玉倚为"解语花"；周旋于怡红院各方之间，从无失言。',
+    quote:'"枉自温柔和顺，空云似桂如兰。"',
+    verdict:'责任属·解语花',why:'你用温柔扛起了责任，把细心活成了可靠。'},
+  liwan:{name:'李纨',short:'李纨',id:'荣国府 · 稻香老农 ｜ 守静',cls:'端',col:'#e3c07a',
+    tags:['淡泊','宽厚','守静','清心'],
+    desc:'你是人群里最沉得住气的那一个。经历过大起大落，你早早学会了把情绪收起来，把日子过得平稳踏实。你不爱争抢风头，却有一种让人安定的力量。你待人宽厚，乐于成就别人，海棠诗社里你自荐掌坛、评判公允。你的通透来自一句：知道什么该放下。',
+    moment:'青春守寡后一心教子，主持海棠诗社并任评判，于稻香村自号"稻香老农"。',
+    quote:'"桃李春风结子完，到头谁似一盆兰。"',
+    verdict:'淡泊属·稻香老农',why:'你把波澜活成了静水，用宽厚撑起一方安稳。'},
+
+  xifeng:{name:'王熙凤',short:'凤姐',id:'荣国府 · 凤辣子 ｜ 管理奇才',cls:'谋',col:'#e07a6a',
+    tags:['精明','泼辣','权谋','能干'],
+    desc:'你是天生的场面人，走到哪里都能掌控节奏。你口齿伶俐、反应极快，能把复杂的人情账算得清清楚楚。你敢说敢做，雷厉风行，把一大家子事管得井井有条。你有极强的掌控欲，也为此得罪不少人——但你不在乎，你只在乎事情能不能成。你活得像一团火，亮眼又灼人。',
+    moment:'协理宁国府，五七之内把混乱丧事办得井然有序；"粉面含春威不露，丹唇未启笑先闻"。',
+    quote:'"粉面含春威不露，丹唇未启笑先闻。"',
+    verdict:'精明属·凤辣子',why:'你把复杂的局面理清，用魄力把自己活成了中心。'},
+  pinger:{name:'平儿',short:'平儿',id:'荣国府 · 俏平儿 ｜ 平衡高手',cls:'谋',col:'#e07a6a',
+    tags:['圆融','公正','机敏','善良'],
+    desc:'你身处最复杂的位置，却能把各方关系处理得滴水不漏。你机敏、周到、有分寸，既懂得维护上位者，也愿意替底下人留余地。你从不仗势欺人，反而常常用自己的方式化解矛盾、保护弱者。你的高明在于：在夹缝里也能把事情办得漂亮，还不结仇。',
+    moment:'作为凤姐陪房，周旋于贾琏、凤姐与下人之间，"俏平儿软语救贾琏""情掩虾须镯"。',
+    quote:'"俏平儿软语救贾琏，柔中带刚护众人。"',
+    verdict:'平衡属·俏平儿',why:'你把圆融活成了智慧，在夹缝中也护住了善良。'},
+  yuanyang:{name:'鸳鸯',short:'鸳鸯',id:'荣国府 · 金鸳鸯 ｜ 忠烈丫鬟',cls:'谋',col:'#e07a6a',
+    tags:['忠贞','刚烈','机警','主见'],
+    desc:'你看着温和，骨子里却极有主见。你有极强的忠诚度，认定了要守护的人就绝不背叛；但你绝不盲从，一旦触及底线，你会毫不犹豫地反抗，哪怕代价惨重。你机警能干，把贾母的生活安排得妥妥帖帖。你证明了一件事：身份低微，也可以活得有尊严、有骨气。',
+    moment:'誓绝鸳鸯偶，面对贾赦逼婚剪发明志、宁死不屈；贾母在世时倚为心腹。',
+    quote:'"宁为玉碎，不为瓦全。"',
+    verdict:'忠烈属·金鸳鸯',why:'你温柔却有骨，把自己的底线守得死死的。'},
+  xiaohong:{name:'小红',short:'小红',id:'怡红院 · 红玉 ｜ 逆袭奇兵',cls:'谋',col:'#e07a6a',
+    tags:['机灵','进取','口才','清醒'],
+    desc:'你是个"心里有数"的人，知道自己要什么，也懂得抓住机会。你口齿伶俐、做事麻利，不因出身低微就自轻自贱。你善于展示自己，也懂得在关键人物面前留下好印象。你相信命运掌握在自己手里，只要肯争，就能从不起眼的位置一路往上走。',
+    moment:'怡红院里一手漂亮的茶艺与口才被凤姐看中，一句话回禀"四五门子的话"令凤姐叫绝，从此翻身。',
+    quote:'"千里搭长棚，没有不散的筵席。"',
+    verdict:'进取属·红玉',why:'你把手里的烂牌打好，用机灵和清醒改写了自己的位置。'},
+
+  baoyu:{name:'贾宝玉',short:'宝玉',id:'怡红院 · 怡红公子 ｜ 绛洞花主',cls:'痴',col:'#c99ad6',
+    tags:['多情','叛逆','纯真','重情'],
+    desc:'你和世俗的"成功标准"总是格格不入。你不爱功名利禄，不爱应酬规矩，偏偏把心思都花在真诚的感情和美的事物上。你对女性由衷尊重，愿意为她们说话、替她们操心。你多情而纯粹，容易被触动，也容易受伤。你身上有一种孩子气的执着：相信感情值得被认真对待。',
+    moment:'衔玉而生，厌弃仕途经济；"女儿是水做的骨肉"之论惊世骇俗，为晴雯作《芙蓉女儿诔》。',
+    quote:'"女儿是水做的骨肉，男子是泥做的骨肉。"',
+    verdict:'情痴属·怡红公子',why:'你宁可做世俗眼中的异类，也要守住心里的真与美。'},
+  qingwen:{name:'晴雯',short:'晴雯',id:'怡红院 · 芙蓉女儿 ｜ 心比天高',cls:'痴',col:'#c99ad6',
+    tags:['刚烈','骄傲','直率','灵动'],
+    desc:'你是那种"宁折不弯"的人。你漂亮、聪明、手巧，骨头却硬得很——受了委屈一定要说，看不惯的事一定要怼。你不肯低头讨好，也不肯学圆滑，因此吃了大亏。可你从不后悔：你宁愿痛痛快快地活一场，也不愿窝窝囊囊地苟着。你的直率，是这个园子里最锋利也最动人的光。',
+    moment:'病补雀金裘，高烧中强撑着为宝玉织补；后被逐出怡红院含冤而死，宝玉作《芙蓉女儿诔》祭之。',
+    quote:'"心比天高，身为下贱。风流灵巧招人怨。"',
+    verdict:'刚烈属·芙蓉女儿',why:'你宁可折断也不弯下，把骄傲活成了绝唱。'},
+  zijuan:{name:'紫鹃',short:'紫鹃',id:'潇湘馆 · 紫鹃 ｜ 痴情侍女',cls:'痴',col:'#c99ad6',
+    tags:['忠诚','细腻','聪慧','痴情'],
+    desc:'你把"为别人着想"刻进了骨子里。你心思极细，能察觉到旁人最细微的情绪变化，并默默把事情安排好。你对认定的主子忠心耿耿，甚至愿意为她的幸福冒险——你试探宝玉的心意，只为黛玉能有个好归宿。你的温柔里藏着一股韧劲：认定的事，就想尽办法去成全。',
+    moment:'"慧紫鹃情辞试忙玉"，谎称黛玉要回苏州，试探宝玉真心，促成二人情感明朗。',
+    quote:'"若真心待她，何惧一试。"',
+    verdict:'痴情属·紫鹃',why:'你把深情藏在细处，用自己的方式成全了别人。'},
+  yousanjie:{name:'尤三姐',short:'三姐',id:'宁国府 · 尤三姐 ｜ 烈性女儿',cls:'痴',col:'#c99ad6',
+    tags:['刚烈','决绝','真性情','勇敢'],
+    desc:'你活得坦荡又决绝，爱恨都摆在明面上。你看透了虚伪，不愿再被人摆布，于是选择用自己的方式夺回人生的主动权。你认定了一个人，就把整颗心交出去；一旦发现被辜负，你也敢用最激烈的方式捍卫尊严。你身上有一种近乎悲壮的勇气：宁为玉碎，不为瓦全。',
+    moment:'看破宁国府污浊，矢志改嫁；心许柳湘莲，后者疑其不洁索回定礼，她当场拔剑自刎以明志。',
+    quote:'"我此生只认一个理：清白二字。"',
+    verdict:'决绝属·烈性女儿',why:'你把清白看得比命重，用决绝守住了最后的尊严。'}
+};
+
+/* 四类各 4 人；选项 A/B/C/D 依次对应 清/端/谋/痴 */
+const CLS={
+  '清':['daiyu','xiangyun','xiangling','miaoyu'],
+  '端':['baochai','tanchun','xiren','liwan'],
+  '谋':['xifeng','pinger','yuanyang','xiaohong'],
+  '痴':['baoyu','qingwen','zijuan','yousanjie']
+};
+const ORDER=['清','端','谋','痴'];
+// 按类别与题号轮换生成权重，保证每位人物都拿到不同名次、且全部可达
+function sc(cls,qi,oi){
+  const arr=CLS[cls],off=(qi+oi)%4,w=[3,2,2,1],o={};
+  for(let j=0;j<4;j++)o[arr[(off+j)%4]]=w[j];
+  return o;
+}
+
+/* ============ 题库：每题四选项，c 为类别 ============ */
+const Q=[
+ {q:'初进大观园，你给人的第一印象是？',o:[
+  {t:'话不多，却让人忍不住多看两眼，带着淡淡书卷气',c:'清'},
+  {t:'得体周到，谁都愿意和你多聊几句',c:'端'},
+  {t:'眼明手快，一眼就把场面的门道看透了',c:'谋'},
+  {t:'笑得格外真诚，很快就把气氛暖起来',c:'痴'}]},
+ {q:'海棠诗社要起个别号，你会取？',o:[
+  {t:'清冷雅致的，最好带点花草意象',c:'清'},
+  {t:'稳重含蓄的，不张扬但有分量',c:'端'},
+  {t:'利落响亮的，一听就是能干人',c:'谋'},
+  {t:'有趣好玩的，能让人记住就好',c:'痴'}]},
+ {q:'手里有一笔可自由支配的月钱，你会？',o:[
+  {t:'买几本好书、好纸好墨',c:'清'},
+  {t:'先存起来，以备不时之需',c:'端'},
+  {t:'盘算着怎么用它生出更多价值',c:'谋'},
+  {t:'请朋友们吃喝玩乐，热闹一场',c:'痴'}]},
+ {q:'被人在背后说了闲话，你会？',o:[
+  {t:'心里难过，但不辩解，转头把委屈写进文字',c:'清'},
+  {t:'淡淡一笑，用行动慢慢证明自己',c:'端'},
+  {t:'查清楚是谁，当场把事情翻明白',c:'谋'},
+  {t:'当面问清楚，受了委屈绝不当哑巴',c:'痴'}]},
+ {q:'你最受不了身边哪种人？',o:[
+  {t:'粗俗不懂情趣，说话大煞风景',c:'清'},
+  {t:'没分寸、不稳重，做事全凭性子',c:'端'},
+  {t:'糊弄事、没能力，还占着位置',c:'谋'},
+  {t:'虚情假意，拿感情当儿戏',c:'痴'}]},
+ {q:'中秋夜宴热闹散场后，你通常会？',o:[
+  {t:'独自看月亮，心里有点说不出的怅惘',c:'清'},
+  {t:'帮着收拾妥当，确认大家都安顿好',c:'端'},
+  {t:'盘算明天的安排，把后续事宜想清楚',c:'谋'},
+  {t:'拉着朋友再聊一会儿，舍不得散',c:'痴'}]},
+ {q:'遇到一条明显不合理的规定，你会？',o:[
+  {t:'心里不认同，但懒得争辩，保持距离',c:'清'},
+  {t:'找合适的方式委婉提建议，不撕破脸',c:'端'},
+  {t:'直接动手改它，能改多少改多少',c:'谋'},
+  {t:'当面质疑，凭什么要守这种规矩',c:'痴'}]},
+ {q:'一段感情里，你最看重什么？',o:[
+  {t:'灵魂相通，一个眼神就懂彼此',c:'清'},
+  {t:'稳定踏实，能长久地走下去',c:'端'},
+  {t:'彼此成就，谁也不拖累谁',c:'谋'},
+  {t:'真心和热烈，爱就要轰轰烈烈',c:'痴'}]},
+ {q:'若要在园子里选一处住所，你选？',o:[
+  {t:'竹林深处的小院，清幽有书香气',c:'清'},
+  {t:'种满香草的院落，宽敞又体面',c:'端'},
+  {t:'四通八达、便于理事的院落',c:'谋'},
+  {t:'热闹的怡红院，朋友随时能来',c:'痴'}]},
+ {q:'朋友做了件你不认同的事，你会？',o:[
+  {t:'不赞同，但尊重他的选择，心里保留看法',c:'清'},
+  {t:'私下委婉提醒，点到为止',c:'端'},
+  {t:'直说利弊，帮他分析该怎么补救',c:'谋'},
+  {t:'当面讲清楚，宁可争执也不装没事',c:'痴'}]},
+ {q:'面对家族与规矩安排的人生，你？',o:[
+  {t:'认命但不服气，把心事写进文字',c:'清'},
+  {t:'接受现状，在自己的位置上做到最好',c:'端'},
+  {t:'想尽办法争取，命是挣来的',c:'谋'},
+  {t:'绝不妥协，宁可付代价也要自己选',c:'痴'}]},
+ {q:'关于"人情世故"，你的态度是？',o:[
+  {t:'不耐烦，觉得真诚比应酬重要',c:'清'},
+  {t:'人情是学问，懂分寸才能走得远',c:'端'},
+  {t:'人情是资源，用得好能成事',c:'谋'},
+  {t:'够用就好，犯不着为它委屈自己',c:'痴'}]},
+ {q:'深夜独处时，你最常想的是？',o:[
+  {t:'那些说不清的惆怅与美好的瞬间',c:'清'},
+  {t:'明天要做的事，还有家人的近况',c:'端'},
+  {t:'眼下的局，以及下一步该怎么走',c:'谋'},
+  {t:'某个让我心动或心疼的人',c:'痴'}]},
+ {q:'你希望别人怎样评价你？',o:[
+  {t:'是个有才情、有风骨的人',c:'清'},
+  {t:'是个可靠、让人放心的人',c:'端'},
+  {t:'是个能干、办得成事的人',c:'谋'},
+  {t:'是个真性情、值得深交的人',c:'痴'}]},
+ {q:'你最向往的生活是？',o:[
+  {t:'清静读书、写写画画，精神富足',c:'清'},
+  {t:'安稳有序，家人平安，日子平稳',c:'端'},
+  {t:'有事可做、有权可用，不断向上',c:'谋'},
+  {t:'热闹知己，爱恨分明，活个痛快',c:'痴'}]},
+ {q:'一场误会让你背了黑锅，你会？',o:[
+  {t:'不愿辩解，懂我的人自然懂',c:'清'},
+  {t:'等时机成熟，用事实慢慢澄清',c:'端'},
+  {t:'立刻查清真相，当场翻案',c:'谋'},
+  {t:'当面讨说法，绝不让自家人受委屈',c:'痴'}]},
+ {q:'你身上哪种气质最突出？',o:[
+  {t:'一眼看去就有点清冷疏离的书卷气',c:'清'},
+  {t:'让人安心的沉稳与从容',c:'端'},
+  {t:'雷厉风行、说干就干的魄力',c:'谋'},
+  {t:'毫不掩饰的真诚与热烈',c:'痴'}]},
+ {q:'若留一句话在大观园，你会写？',o:[
+  {t:'"质本洁来还洁去"',c:'清'},
+  {t:'"好风凭借力，送我上青云"',c:'端'},
+  {t:'"才自精明志自高"',c:'谋'},
+  {t:'"女儿是水做的骨肉"',c:'痴'}]}
+];
+
+/* ============ 逻辑 ============ */
+const $=id=>document.getElementById(id);
+let ans=[],cur=0,resultKey=null;
+const keys=Object.keys(P);
+
+function show(id){document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));$(id).classList.add('on');window.scrollTo(0,0)}
+
+(function(){
+  const g=$('pgrid');
+  keys.forEach(k=>{const d=document.createElement('div');d.className='pchip';
+    d.innerHTML='<i>'+P[k].short+'</i>'+P[k].name;g.appendChild(d)});
+})();
+
+(function(){
+  const c=$('dust'),x=c.getContext('2d');let W,H,pts=[];
+  function rs(){W=c.width=innerWidth;H=c.height=innerHeight;pts=Array.from({length:Math.min(90,Math.floor(W*H/16000))},()=>({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.5+.3,a:Math.random(),v:Math.random()*.012+.004}))}
+  rs();addEventListener('resize',rs);
+  function loop(){x.clearRect(0,0,W,H);for(const p of pts){p.a+=p.v;if(p.a>1||p.a<.1)p.v*=-1;
+    x.beginPath();x.arc(p.x,p.y,p.r,0,7);x.fillStyle='rgba(232,200,122,'+(p.a*.5)+')';x.fill()}
+    requestAnimationFrame(loop)}loop();
+})();
+
+function start(){ans=[];cur=0;show('v-quiz');render()}
+function render(){
+  const q=Q[cur];
+  $('qnow').textContent=cur+1;$('qall').textContent=Q.length;
+  $('barfill').style.width=(cur/Q.length*100)+'%';
+  $('qtext').textContent=q.q;
+  const box=$('opts');box.innerHTML='';
+  q.o.forEach((o,i)=>{
+    const d=document.createElement('div');d.className='opt';
+    d.innerHTML='<span class="k">'+'ABCD'[i]+'</span><span>'+o.t+'</span>';
+    d.onclick=()=>pick(i);box.appendChild(d)
+  });
+}
+function pick(i){
+  ans[cur]=i;
+  document.querySelectorAll('.opt').forEach((e,j)=>e.classList.toggle('sel',j===i));
+  $('barfill').style.width=((cur+1)/Q.length*100)+'%';
+  setTimeout(()=>{cur++;if(cur<Q.length)render();else finish()},280)
+}
+function finish(){
+  const sco={},mx={};keys.forEach(k=>{sco[k]=0;mx[k]=0});
+  ans.forEach((oi,qi)=>{
+    const s=sc(Q[qi].o[oi].c,qi,oi);
+    for(const k in s)sco[k]+=s[k];
+  });
+  // 理论满分：每题都选该人物所属类别的选项时，该人物能拿到的真实总分
+  keys.forEach(k=>{
+    const c=P[k].cls,oci=ORDER.indexOf(c);let m=0;
+    for(let qi=0;qi<Q.length;qi++)m+=(sc(c,qi,oci)[k]||0);
+    mx[k]=m;
+  });
+  const rank=keys.slice().sort((a,b)=>sco[b]-sco[a]);
+  resultKey=rank[0];
+  const p=rank.map((k,i)=>({k,v:sco[k],pct:Math.round(sco[k]/mx[k]*100)}));
+  for(let i=1;i<p.length;i++)p[i].pct=Math.min(p[i].pct,p[i-1].pct-2);
+  const top=p[0],person=P[resultKey];
+
+  $('rseal').style.setProperty('--rc',person.col);
+  $('rsealname').textContent=person.short;
+  $('rname').textContent=person.name;
+  $('rid').textContent=person.id;
+  $('rverdict').textContent=person.verdict;
+  $('rwhy').textContent=person.why;
+  $('rdesc').textContent=person.desc;
+  $('rtags').innerHTML=person.tags.map(t=>'<span class="tag"># '+t+'</span>').join('');
+  $('rmoment').textContent=person.moment;
+  $('rquote').textContent=person.quote;
+
+  show('v-result');
+  $('ringval').style.strokeDashoffset=(339.3*(1-top.pct/100)).toFixed(1);
+  let n=0;const timer=setInterval(()=>{n+=Math.ceil(top.pct/22);if(n>=top.pct){n=top.pct;clearInterval(timer)}$('rpct').textContent=n},45);
+  $('rtop3').innerHTML=p.slice(0,3).map((it,i)=>
+    '<div class="t3row"><span class="n">'+(i+1)+'. '+P[it.k].name+'</span>'+
+    '<span class="track"><i data-w="'+Math.max(8,it.pct)+'"></i></span>'+
+    '<span class="p">'+it.pct+'%</span></div>').join('');
+  setTimeout(()=>document.querySelectorAll('#rtop3 .track i').forEach(e=>e.style.width=e.dataset.w+'%'),120);
+}
+function restart(){show('v-home')}
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2000)}
+
+/* ============ 生成人物卡片 ============ */
+function makeCard(){
+  if(!resultKey)return;
+  const p=P[resultKey],W=1080,H=1440,c=document.createElement('canvas');c.width=W;c.height=H;
+  const x=c.getContext('2d');
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,'#2a1f33');g.addColorStop(1,'#0b0910');
+  x.fillStyle=g;x.fillRect(0,0,W,H);
+  x.strokeStyle='rgba(232,200,122,.07)';x.lineWidth=2;
+  for(let r=140;r<760;r+=62){x.beginPath();x.arc(W/2,H/2,r,0,7);x.stroke()}
+  x.textAlign='center';
+  x.fillStyle='#c9963f';x.font='600 30px sans-serif';x.fillText('镜 花 水 月 · 红 楼 人 格 测 试',W/2,96);
+  const side=260,sx=W/2-side/2,sy=190;
+  x.save();x.translate(W/2,sy+side/2);x.rotate(-3*Math.PI/180);x.translate(-W/2,-sy-side/2);
+  x.strokeStyle=p.col;x.lineWidth=7;x.strokeRect(sx,sy,side,side);
+  x.strokeStyle='rgba(232,200,122,.4)';x.lineWidth=2;x.strokeRect(sx+16,sy+16,side-32,side-32);
+  x.fillStyle='#f6e6bd';x.font='bold 96px "KaiTi","STKaiti",serif';x.fillText(p.short,W/2,sy+side/2+34);
+  x.restore();
+  x.fillStyle='#f6e6bd';x.font='800 76px sans-serif';x.fillText(p.name,W/2,560);
+  x.fillStyle='#a79f92';x.font='30px sans-serif';x.fillText(p.id,W/2,616);
+  x.fillStyle='#e8c87a';x.font='700 46px sans-serif';x.fillText('契合度 '+document.getElementById('rpct').textContent+'%',W/2,706);
+  x.fillStyle='#ded7c9';x.font='30px sans-serif';
+  wrapText(x,p.desc.slice(0,58)+'…',W/2,790,W-150,50);
+  x.fillStyle='#e8c87a';x.font='600 28px sans-serif';x.fillText(p.tags.map(t=>'# '+t).join('   '),W/2,1180);
+  x.fillStyle='#6f6a5f';x.font='24px sans-serif';x.fillText('你最像红楼梦里的哪个人物',W/2,H-70);
+
+  const a=document.createElement('a');
+  a.download='红楼人物卡片_'+p.name+'.png';a.href=c.toDataURL('image/png');a.click();
+  toast('人物卡片已保存 ✓');
+}
+function wrapText(ctx,text,cx,y,maxW,lh){
+  const chars=text.split('');let line='',yy=y;
+  for(const ch of chars){if(ctx.measureText(line+ch).width>maxW){ctx.fillText(line,cx,yy);line=ch;yy+=lh}else line+=ch}
+  if(line)ctx.fillText(line,cx,yy)
+}
+</script>
+</body>
+</html>
